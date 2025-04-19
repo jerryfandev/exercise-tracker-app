@@ -24,8 +24,7 @@ The application uses a Flask backend with SQLite for data storage and a clean Ja
 | UWA ID     | Name              | GitHub Username   |
 |------------|-------------------|-------------------|
 | 24452786   | Nhat Vu Phan      | jerryfandev       |
-| 24343452   | Muhammad Sulaiman Farooq      | 
-msf0005      |
+| 24343452   | Muhammad Sulaiman Farooq  | msf0005         |
 | [UWA ID]   | [Full Name]       | [githubname]      |
 | [UWA ID]   | [Full Name]       | [githubname]      |
 
