@@ -21,6 +21,12 @@ def register_routes(app):
     def dashboard():
         return init_dashboard()
 
+    @app.route('/charts')
+    @login_required
+    def charts():
+        return connect_db_to_charts()
+    
+
     @app.route('/profile', methods=['GET', 'POST'])
     @login_required
     def profile():

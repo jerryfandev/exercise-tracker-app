@@ -5,49 +5,52 @@ const kcalChart = document.getElementById('myChart').getContext('2d');
 const weightChart = document.getElementById('weightChart').getContext('2d');
 const timeChart = document.getElementById('bubbleChart').getContext('2d');
 
-// Kcal Burned in the Last 7 Days
-const myKcalChart = new Chart(kcalChart, {
-    type: 'bar',
-    data: {
-        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-        datasets: [{
-            label: 'Kcal (hundreds)',
-            data: [1, 5, 12, 19, 3, 5, 0],
-            borderWidth: 1
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-            y: {
-                beginAtZero: true,
-                title: {
-                    display: true,
-                    text: "Kcal (hundreds)"
-                }
-            }
+fetch('/charts')
+.then(res => res.json())
+.then(data => 
+    new Chart(kcalChart, {
+        type: 'bar',
+        data: {
+            labels: data.p7d_labels,
+            datasets: [{
+                label: 'calories',
+                data: data.p7d_cal,
+                borderWidth: 1
+            }]
         },
-        plugins: {
-            title: {
-                display: true,
-                text: 'Kcal Burned in the Last 7 Days',
-                align: 'start',
-                padding: {
-                    top: 10,
-                    bottom: 30
-                },
-                font: {
-                    size: 18
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: "Calories"
+                    }
                 }
             },
-            legend: {
-                display: false,
-                position: 'top'
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Calories Burned in the Last 7 Days',
+                    align: 'start',
+                    padding: {
+                        top: 10,
+                        bottom: 30
+                    },
+                    font: {
+                        size: 18
+                    }
+                },
+                legend: {
+                    display: false,
+                    position: 'top'
+                }
             }
         }
-    }
-});
+    })
+);
 
 // Weight Changes Over the Past 12 Weeks
 const myWeight = {
@@ -124,20 +127,23 @@ const myWeightChart = new Chart(weightChart, {
 });
 
 // Exercise minutes in the last 100 days
-const data = Array.from({length: 100}, (_, i) => {
-    const minutes = Math.floor(Math.random() * 120) + 30; // 30-150 phút
-    return {
-        x: i + 1,
-        y: minutes,
-        r: minutes / 15  // bán kính tỉ lệ theo số phút (15 phút ~ 1px)
-    };
-});
-const bubbleChart = new Chart(timeChart, {
+//const data = Array.from({length: 100}, (_, i) => {
+  //  const minutes = Math.floor(Math.random() * 120) + 30; // 30-150 phút
+    //return {
+      //  x: i + 1,
+        //y: minutes,
+       // r: minutes / 15  // bán kính tỉ lệ theo số phút (15 phút ~ 1px)
+    //};
+//});
+fetch('/charts')
+  .then(res => res.json())
+  .then(data => 
+    new Chart(timeChart, {
     type: 'bubble',
     data: {
         datasets: [{
             label: 'Giờ tập luyện',
-            data: data,
+            data: data.bubble_data,
             backgroundColor: 'rgba(54, 162, 235, 0.5)',
             borderColor: 'rgba(54, 162, 235, 1)',
             borderWidth: 1
@@ -180,7 +186,7 @@ const bubbleChart = new Chart(timeChart, {
                     text: 'Day'
                 },
                 min: 0,
-                max: 100,
+                max: 101,
                 ticks: {
                     stepSize: 10
                 }
@@ -191,11 +197,12 @@ const bubbleChart = new Chart(timeChart, {
                     text: 'Minutes'
                 },
                 min: 0,
-                max: 180
+                max: 20000
             }
         }
     }
-});
+})
+  );
 
 /*************************************************
  * Handle chart with GPT                         *
