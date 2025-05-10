@@ -54,6 +54,10 @@ venv\Scripts\activate
 ```bash
 pip install -r requirements.txt
 ```
+Since the Database Migration has been initialised, we need to run
+``` bash
+flask db upgrade
+```
 ### 4. Run the Flask Application
 ```bash
 python run.py
