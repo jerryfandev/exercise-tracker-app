@@ -21,7 +21,7 @@
         <!-- Add CSRF Token -->
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-        <div class="row justify-content-center">
+        <div class="row justify-content-center view-profile-details">
             <div class="col-md-3 common-container justify-content-center align-items-center">
                 <div class="avatar-wrapper position-relative">
                     <i class="fa-solid fa-pen-to-square position-absolute d-none"></i>
@@ -61,7 +61,8 @@
                 </div>
             </div>
             {% if current_user.is_friend_with(profile_user) %}
-            <div class="col-md-9 profile-container">
+            <div class="col-md-5 profile-container">
+                <h4 class="ps-3"><span class="trophy">ℹ️</span> Details</h4>
                 <!-- Username -->
                 <div class="form-group row mb-2 d-flex align-items-center">
                     <label class="col-sm-3 col-form-label"><strong>Username:</strong></label>
@@ -121,16 +122,9 @@
                 <!-- Last Login -->
                 <div class="form-group row mb-2 d-flex align-items-center">
                     <label class="col-sm-3 col-form-label"><strong>Last Login:</strong></label>
-                    <div class="col-sm-9">
+                    <div class="col-sm-9 last-login-container">
                         <span>{{ profile_user.last_login.strftime('%d-%m-%Y %H:%M') if profile_user.last_login else 'Never' }}</span>
-                    </div>
-                </div>
-
-                <!-- Account Status -->
-                <div class="form-group row mb-2 d-flex align-items-center">
-                    <label class="col-sm-3 col-form-label"><strong>Account Status:</strong></label>
-                    <div class="col-sm-9">
-                        <span>
+                        <span class="d-flex">
                             {% if profile_user.is_active %}
                                 <span class="badge bg-success">Active</span>
                             {% else %}
@@ -140,8 +134,36 @@
                     </div>
                 </div>
             </div>
+            <div class="col-md-4 profile-container">
+                    <h4><span class="trophy">🏆</span> Achievements</h4>
+                    <div class="achievement-section">
+                        {% for achievement in achievements %}
+                        <div class="card {{ achievement.exercise_type|lower }}">
+                            <div class="icon">{{ achievement.icon }}</div>
+                            <div class="content">
+                                <div><strong>{{ achievement.description }}</strong></div>
+                                <div class="date">({{ achievement.achieved_at.strftime('%Y-%m-%d %H:%M') }})</div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
             {% endif %}
         </div>
+        {% if current_user.is_friend_with(profile_user) %}
+        <div class="row justify-content-center mt-4">
+            <div class="col-12 col-md-6 mb-4 custom-cell">
+                <div class="box">
+                    <canvas id="viewKcalChart" class="w-100" height="400"></canvas>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 mb-4 custom-cell">
+                <div class="box">
+                    <canvas id="viewBubbleChart" class="w-100" height="400"></canvas>
+                </div>
+            </div>
+        </div>
+        {% endif %}
         {% if not current_user.is_friend_with(profile_user) %}
         <div class="text-center mt-5">
             <h5 class="text-secondary">This profile is private</h5>
@@ -149,4 +171,5 @@
         {% endif %}
     </div>
 </div>
+<script src="{{ url_for('static', filename='script/view-profile.js') }}"></script>
 {% endblock %}

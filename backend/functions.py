@@ -118,67 +118,49 @@ def init_dashboard():
         total_exercises = ExerciseLog.query.filter_by(user_id=user_id).count()
         latest_exercise = ExerciseLog.query.filter_by(user_id=user_id).order_by(ExerciseLog.date.desc()).first()
         last_calories = latest_exercise.calories if latest_exercise else 0
-        achievements = Achievement.query.filter_by(user_id=user_id) \
-            .order_by(Achievement.achieved_at.desc()).all()
-
-        # Add icon for each exercise type
-        for achievement in achievements:
-            match achievement.exercise_type.lower():
-                case 'all':
-                    achievement.icon = '⭐'
-                case 'running':
-                    achievement.icon = '🏃'
-                case 'cycling':
-                    achievement.icon = '🚴'
-                case 'swimming':
-                    achievement.icon = '🏊'
-                case 'yoga':
-                    achievement.icon = '🧘'
-                case _:
-                    achievement.icon = '🧩'
 
         return render_template(
             'dashboard.html',
             total_exercises=total_exercises,
-            last_calories=last_calories,
-            achievements=achievements
+            last_calories=last_calories
         )
     return render_template('login.html')
 
 
-def connect_db_to_charts():
-    user_id = session['user_id']
+def connect_db_to_charts(username):
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        return jsonify({'error': 'User not found'}), 404
+
+    user_id = user.id
 
     today = datetime.utcnow().date()
     past_7_days = [today - timedelta(days=i) for i in range(6, -1, -1)]
-    past_100_days = [today - timedelta(days=i) for i in range(99, -1, -1)]
 
-    p7d_logs = ExerciseLog.query.filter(ExerciseLog.user_id == user_id, ExerciseLog.date >= past_7_days[0]).all()
-    p100d_logs = ExerciseLog.query.filter(ExerciseLog.user_id == user_id, ExerciseLog.date >= past_100_days[0]).all()
+    logs = ExerciseLog.query.filter(
+        ExerciseLog.user_id == user_id,
+        ExerciseLog.date >= past_7_days[0]
+    ).all()
 
     cal_per_day = {day: 0 for day in past_7_days}
-    duration_per_day = {day: 0 for day in past_100_days}
+    duration_per_day = {day: 0 for day in past_7_days}
 
-    for log in p7d_logs:
+    for log in logs:
         log_day = log.date.date()
         if log_day in cal_per_day:
             cal_per_day[log_day] += log.calories
-
-    for log in p100d_logs:
-        log_day = log.date.date()
-        if log_day in duration_per_day:
             duration_per_day[log_day] += log.duration
 
     p7d_labels = [day.strftime('%a') for day in past_7_days]
     p7d_cal = [cal_per_day[day] for day in past_7_days]
 
     bubble_data = []
-    for i, day in enumerate(past_100_days):
+    for i, day in enumerate(past_7_days):
         minutes = duration_per_day[day]
         bubble_data.append({
             'x': i + 1,
             'y': minutes,
-            'r': min(30, max(3, minutes / 15))
+            'r': min(30, max(3, minutes / 5))  # điều chỉnh kích cỡ phù hợp với dữ liệu 7 ngày
         })
 
     return jsonify({'p7d_labels': p7d_labels, 'p7d_cal': p7d_cal, 'bubble_data': bubble_data})
@@ -194,6 +176,23 @@ def init_profile():
 
     # Get the current user from the session
     user = User.query.get(session['user_id'])
+    achievements = get_achievements(session['user_id'])
+
+    # Add icon for each exercise type
+    for achievement in achievements:
+        match achievement.exercise_type.lower():
+            case 'all':
+                achievement.icon = '⭐'
+            case 'running':
+                achievement.icon = '🏃'
+            case 'cycling':
+                achievement.icon = '🚴'
+            case 'swimming':
+                achievement.icon = '🏊'
+            case 'yoga':
+                achievement.icon = '🧘'
+            case _:
+                achievement.icon = '🧩'
 
     # Handle profile update when the form is submitted (POST method)
     if request.method == 'POST':
@@ -286,7 +285,7 @@ def init_profile():
             return redirect(url_for('profile'))
 
     # If GET request, just render the profile page with the user's current data
-    return render_template('profile.html')
+    return render_template('profile.html', achievements=achievements)
 
 
 def view_profile(username):
@@ -295,7 +294,24 @@ def view_profile(username):
         abort(404, description="User not found")
     if current_user.is_authenticated and user.id == current_user.id:
         return redirect(url_for('profile'))
-    return render_template('view-profile.html', profile_user=user)
+    achievements = get_achievements(user.id)
+
+    # Add icon for each exercise type
+    for achievement in achievements:
+        match achievement.exercise_type.lower():
+            case 'all':
+                achievement.icon = '⭐'
+            case 'running':
+                achievement.icon = '🏃'
+            case 'cycling':
+                achievement.icon = '🚴'
+            case 'swimming':
+                achievement.icon = '🏊'
+            case 'yoga':
+                achievement.icon = '🧘'
+            case _:
+                achievement.icon = '🧩'
+    return render_template('view-profile.html', profile_user=user, achievements=achievements)
 
 
 def init_sharing():
@@ -421,3 +437,8 @@ def handle_respond_request(user_id, response):
 
     db.session.commit()
     return redirect(url_for('view_others', username=sender_user.username))
+
+
+def get_achievements(user_id):
+    return Achievement.query.filter_by(user_id=user_id) \
+        .order_by(Achievement.achieved_at.desc()).all()

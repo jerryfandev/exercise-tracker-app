@@ -77,3 +77,36 @@
 .bmi-obese {
   background: linear-gradient(to right, #ef5350, #ffffff);
 }
+
+.achievement-section {
+    margin-top: 20px;
+    height: 385px;
+    overflow-y: auto;
+}
+
+.achievement-section::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+.achievement-section .card {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 16px 20px;
+    margin-right: 10px;
+    margin-bottom: 16px;
+    border-radius: 12px;
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.last-login-container {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.view-profile .view-profile-details {
+    padding: 0 12px;
+}

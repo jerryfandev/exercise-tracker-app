@@ -40,7 +40,8 @@
                         <p class="joined-date">Member since {{ user.created_at.strftime('%d-%m-%Y') }}</p>
                     </div>
                 </div>
-                <div class="col-md-9 profile-container">
+                <div class="col-md-5 profile-container">
+                    <h4 class="ps-3"><span class="trophy">ℹ️</span> Details</h4>
                     <!-- Username -->
                     <div class="form-group row mb-2 d-flex align-items-center">
                         <label class="col-sm-3 col-form-label" for="username"><strong>Username:</strong></label>
@@ -110,18 +111,11 @@
                     </div>
 
                     <!-- Last Login -->
-                    <div class="form-group row mb-2 d-flex align-items-center">
+                    <div class="form-group row mb-2 d-flex align-items-center view-mode">
                         <label class="col-sm-3 col-form-label"><strong>Last Login:</strong></label>
-                        <div class="col-sm-9">
+                        <div class="col-sm-9 last-login-container">
                             <span>{{ user.last_login.strftime('%d-%m-%Y %H:%M') if user.last_login else 'Never' }}</span>
-                        </div>
-                    </div>
-
-                    <!-- Account Status -->
-                    <div class="form-group row mb-2 d-flex align-items-center">
-                        <label class="col-sm-3 col-form-label"><strong>Account Status:</strong></label>
-                        <div class="col-sm-9">
-                            <span>
+                            <span class="d-flex">
                                 {% if user.is_active %}
                                     <span class="badge bg-success">Active</span>
                                 {% else %}
@@ -133,7 +127,7 @@
 
                     <!-- Current Password -->
                     <div class="form-group row edit-mode d-none mb-2">
-                        <label for="current_password" class="col-sm-3 col-form-label"><strong>Current Password:</strong></label>
+                        <label for="current_password" class="col-sm-3 col-form-label"><strong>Password:</strong></label>
                         <div class="col-sm-9">
                             <input type="password" class="form-control" id="current_password" name="current_password" required>
                         </div>
@@ -146,6 +140,20 @@
                             <button type="submit" id="saveBtn" class="btn btn-success d-none">Save</button>
                             <button type="button" id="cancelBtn" class="btn btn-secondary d-none">Cancel</button>
                         </div>
+                    </div>
+                </div>
+                <div class="col-md-4 profile-container">
+                    <h4><span class="trophy">🏆</span> Achievements</h4>
+                    <div class="achievement-section">
+                        {% for achievement in achievements %}
+                        <div class="card {{ achievement.exercise_type|lower }}">
+                            <div class="icon">{{ achievement.icon }}</div>
+                            <div class="content">
+                                <div><strong>{{ achievement.description }}</strong></div>
+                                <div class="date">({{ achievement.achieved_at.strftime('%Y-%m-%d %H:%M') }})</div>
+                            </div>
+                        </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
