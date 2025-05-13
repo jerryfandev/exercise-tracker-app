@@ -15,10 +15,10 @@
     <div class="container py-5">
         <div class="grid-container">
             {% for user in shared_data %}
-            <div class="card card-hover">
+            <div class="profile-card card card-hover" data-username="{{ user.username }}">
                 <div class="dataset-title text-center">
                     <img
-                        class="avatar mb-3"
+                        class="avatar mb-3 rounded-circle"
                         width="100"
                         src="{{ url_for('static', filename=user.avatar_path) }}"
                         alt="No image"
@@ -31,4 +31,12 @@
         </div>
     </div>
 </div>
+<script>
+$(document).ready(function() {
+    $('.profile-card').click(function() {
+        const username = $(this).data('username');
+        window.location.href = `/profile/${username}`;
+    });
+});
+</script>
 {% endblock %}

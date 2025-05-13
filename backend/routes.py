@@ -26,7 +26,8 @@ def register_routes(app):
     @app.route('/charts')
     @login_required
     def charts():
-        return connect_db_to_charts()
+        username = request.args.get('username') or current_user.username
+        return connect_db_to_charts(username)
 
     @app.route('/profile', methods=['GET', 'POST'])
     @login_required
