@@ -33,7 +33,7 @@ fetch('/charts')
             plugins: {
                 title: {
                     display: true,
-                    text: 'Calories Burned in the Last 7 Days',
+                    text: 'Calories Burned in the Last 7 Days(UTC Time)',
                     align: 'start',
                     padding: {
                         top: 10,
@@ -168,7 +168,7 @@ fetch('/charts')
             },
             title: {
                 display: true,
-                text: 'Exercise minutes in the last 100 days',
+                text: 'Exercise minutes in the last 100 days(UTC Time)',
                 align: 'start',
                 padding: {
                     top: 10,
@@ -196,8 +196,7 @@ fetch('/charts')
                     display: true,
                     text: 'Minutes'
                 },
-                min: 0,
-                max: 20000
+                
             }
         }
     }
