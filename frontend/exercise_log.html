@@ -27,12 +27,12 @@
 
                     <div class="form-group mb-3">
                         <label for="duration">Duration (minutes)</label>
-                        <input type="number" class="form-control" id="duration" name="duration" required>
+                        <input type="number" class="form-control" id="duration" name="duration" min="1" max="1440" required>
                     </div>
 
                     <div class="form-group mb-3">
                         <label for="calories">Calories Burned</label>
-                        <input type="number" class="form-control" id="calories" name="calories" required>
+                        <input type="number" class="form-control" id="calories" name="calories" min="1" max="20000" required>
                     </div>
 
                     <button type="submit" class="btn btn-primary">Submit Exercise</button>
@@ -46,14 +46,14 @@
                         <th>Exercise Type</th>
                         <th>Duration (minutes)</th>
                         <th>Calories Burned</th>
-                        <th>Date</th>
+                        <th>Date (UTC Time)</th>
                     </tr>
                     {% for log in logs %}
                     <tr>
                         <td>{{log.exercise_type}}</td>
                         <td>{{log.duration}}</td>
                         <td>{{log.calories}}</td>
-                        <td>{{log.date.strftime('%Y-%m-%d %H:%M')}}</td>
+                        <td >{{log.date.strftime('%Y-%m-%d %H:%M')}}</td>
                     </tr>
                     {% endfor %}
 
