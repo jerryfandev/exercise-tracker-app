@@ -17,11 +17,6 @@ def handle_login():  # Handles user login
             username = form.username.data
             password = form.password.data
 
-            # Check if the user is an admin
-            if is_admin(username, password):
-                session['admin'] = True
-                return jsonify(success=True, redirect='/admin')
-
             # Check if the user is a normal user
             user = User.query.filter((User.username == username) | (User.email == username)).first()
 
@@ -60,7 +55,7 @@ def handle_register():  # Handles user registration
             username = form.username.data
             email = form.email.data
             password = form.password.data
-            phone = form.phone.data
+            phone = form.phone.data.strip() or None
 
             # Create new user
             new_user = User(
@@ -291,7 +286,7 @@ def init_profile():
 def view_profile(username):
     user = User.query.filter_by(username=username).first()
     if not user:
-        abort(404, description="User not found")
+        return render_template('view-profile.html')
     if current_user.is_authenticated and user.id == current_user.id:
         return redirect(url_for('profile'))
     achievements = get_achievements(user.id)
@@ -315,14 +310,18 @@ def view_profile(username):
 
 
 def init_sharing():
-    friends = current_user.friends()
+    users = User.query.filter(User.id != current_user.id).all()
+    friend_ids = {friend.id for friend in current_user.friends()}
     shared_data = [
         {
             'username': f.username,
             'email': f.email,
+            'is_friend': f.id in friend_ids,
+            'sent': current_user.has_pending_request_to(f),
+            'approval': current_user.has_pending_request_from(f),
             'avatar_path': f.avatar_path or 'asset/avatar.png'
         }
-        for f in friends
+        for f in users
     ]
     return render_template('sharing.html', shared_data=shared_data)
 

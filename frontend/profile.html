@@ -145,15 +145,19 @@
                 <div class="col-md-4 profile-container">
                     <h4><span class="trophy">🏆</span> Achievements</h4>
                     <div class="achievement-section">
-                        {% for achievement in achievements %}
-                        <div class="card {{ achievement.exercise_type|lower }}">
-                            <div class="icon">{{ achievement.icon }}</div>
-                            <div class="content">
-                                <div><strong>{{ achievement.description }}</strong></div>
-                                <div class="date">({{ achievement.achieved_at.strftime('%Y-%m-%d %H:%M') }})</div>
+                        {% if achievements %}
+                            {% for achievement in achievements %}
+                            <div class="card {{ achievement.exercise_type|lower }}">
+                                <div class="icon">{{ achievement.icon }}</div>
+                                <div class="content">
+                                    <div><strong>{{ achievement.description }}</strong></div>
+                                    <div class="date">({{ achievement.achieved_at.strftime('%Y-%m-%d %H:%M') }})</div>
+                                </div>
                             </div>
-                        </div>
-                        {% endfor %}
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted">No achievements found.</p>
+                        {% endif %}
                     </div>
                 </div>
             </div>
