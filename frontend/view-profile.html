@@ -17,6 +17,7 @@
     {% endif %}
     {% endwith %}
 
+    {% if profile_user %}
     <div class="container mw-100 mt-4">
         <!-- Add CSRF Token -->
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -137,15 +138,19 @@
             <div class="col-md-4 profile-container">
                     <h4><span class="trophy">🏆</span> Achievements</h4>
                     <div class="achievement-section">
-                        {% for achievement in achievements %}
-                        <div class="card {{ achievement.exercise_type|lower }}">
-                            <div class="icon">{{ achievement.icon }}</div>
-                            <div class="content">
-                                <div><strong>{{ achievement.description }}</strong></div>
-                                <div class="date">({{ achievement.achieved_at.strftime('%Y-%m-%d %H:%M') }})</div>
+                        {% if achievements %}
+                            {% for achievement in achievements %}
+                            <div class="card {{ achievement.exercise_type|lower }}">
+                                <div class="icon">{{ achievement.icon }}</div>
+                                <div class="content">
+                                    <div><strong>{{ achievement.description }}</strong></div>
+                                    <div class="date">({{ achievement.achieved_at.strftime('%Y-%m-%d %H:%M') }})</div>
+                                </div>
                             </div>
-                        </div>
-                        {% endfor %}
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-muted">No achievements found.</p>
+                        {% endif %}
                     </div>
                 </div>
             {% endif %}
@@ -170,6 +175,9 @@
         </div>
         {% endif %}
     </div>
+    {% else %}
+    <div class="text-muted">This user does not exist.</div>
+    {% endif %}
 </div>
 <script src="{{ url_for('static', filename='script/view-profile.js') }}"></script>
 {% endblock %}
