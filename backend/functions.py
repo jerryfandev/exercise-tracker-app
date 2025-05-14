@@ -55,7 +55,7 @@ def handle_register():  # Handles user registration
             username = form.username.data
             email = form.email.data
             password = form.password.data
-            phone = form.phone.data.strip() or None
+            phone = form.phone.data.strip() if form.phone.data else None
 
             # Create new user
             new_user = User(
@@ -155,7 +155,7 @@ def connect_db_to_charts(username):
         bubble_data.append({
             'x': i + 1,
             'y': minutes,
-            'r': min(30, max(3, minutes / 5))  # điều chỉnh kích cỡ phù hợp với dữ liệu 7 ngày
+            'r': min(30, max(3, minutes / 5))
         })
 
     return jsonify({'p7d_labels': p7d_labels, 'p7d_cal': p7d_cal, 'bubble_data': bubble_data})
