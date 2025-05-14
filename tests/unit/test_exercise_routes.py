@@ -82,7 +82,7 @@ class TestExerciseRoutes(unittest.TestCase):
         db.session.commit()
         
         # Access the logs view
-        response = self.client.get('/exercise_logs')
+        response = self.client.get('/exercise_log')
         
         # Check response status
         self.assertEqual(response.status_code, 200)
@@ -93,9 +93,9 @@ class TestExerciseRoutes(unittest.TestCase):
         client = self.app.test_client()
         
         # Try to access a protected route
-        response = client.get('/exercise_logs', follow_redirects=True)
+        response = client.get('/exercise_log', follow_redirects=True)
         
         # Should redirect to login page
         self.assertEqual(response.status_code, 200)
         # Check if we're on the login page (implementation dependent)
-        self.assertEqual(log.calories, 300)
+        self.assertIn(b'id="login-form"', response.data)

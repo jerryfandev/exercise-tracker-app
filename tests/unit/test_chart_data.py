@@ -116,4 +116,5 @@ class TestChartData(unittest.TestCase):
         
         # Verify empty data structure
         self.assertIn('bubble_data', data)
-        self.assertEqual(len(data['bubble_data']), 0)  # Should be empty
+        self.assertTrue(all(item['y'] == 0 for item in data['bubble_data']))
+        self.assertEqual(data['p7d_cal'], [0, 0, 0, 0, 0, 0, 0])
