@@ -134,14 +134,20 @@ def connect_db_to_charts(username):
 
     user_id = user.id
 
+    # Get query parameters
+    view_type = request.args.get('view_type', 'daily')  # Default to daily view
+    selected_day = request.args.get('selected_day', None)  # Optional specific date for hourly data
+    
     today = datetime.utcnow().date()
     past_7_days = [today - timedelta(days=i) for i in range(6, -1, -1)]
 
+    # Basic daily data query
     logs = ExerciseLog.query.filter(
         ExerciseLog.user_id == user_id,
         ExerciseLog.date >= past_7_days[0]
     ).all()
 
+    # Daily statistics
     cal_per_day = {day: 0 for day in past_7_days}
     duration_per_day = {day: 0 for day in past_7_days}
 
@@ -151,19 +157,82 @@ def connect_db_to_charts(username):
             cal_per_day[log_day] += log.calories
             duration_per_day[log_day] += log.duration
 
+    # Prepare daily data
     p7d_labels = [day.strftime('%a') for day in past_7_days]
     p7d_cal = [cal_per_day[day] for day in past_7_days]
-
+    
     bubble_data = []
     for i, day in enumerate(past_7_days):
         minutes = duration_per_day[day]
         bubble_data.append({
             'x': i + 1,
             'y': minutes,
-            'r': min(30, max(3, minutes / 5))  # điều chỉnh kích cỡ phù hợp với dữ liệu 7 ngày
+            'r': min(30, max(3, minutes / 5))  # Adjust size based on 7-day data
         })
 
-    return jsonify({'p7d_labels': p7d_labels, 'p7d_cal': p7d_cal, 'bubble_data': bubble_data})
+    # If hourly view is requested and a specific date is provided
+    hourly_data = {}
+    if view_type == 'hourly' and selected_day:
+        try:
+            selected_date = datetime.strptime(selected_day, '%Y-%m-%d').date()
+            # Ensure date is within the past 7 days
+            if selected_date in past_7_days:
+                # Query data for the selected date
+                day_logs = ExerciseLog.query.filter(
+                    ExerciseLog.user_id == user_id,
+                    db.func.date(ExerciseLog.date) == selected_date
+                ).all()
+                
+                # Initialize 24-hour data
+                hourly_cal = {hour: 0 for hour in range(24)}
+                hourly_duration = {hour: 0 for hour in range(24)}
+                
+                # Aggregate hourly data
+                for log in day_logs:
+                    hour = log.date.hour
+                    hourly_cal[hour] += log.calories
+                    hourly_duration[hour] += log.duration
+                
+                # Convert to format needed by frontend
+                hourly_cal_data = []
+                hourly_duration_data = []
+                
+                for hour in range(24):
+                    if hourly_cal[hour] > 0 or hourly_duration[hour] > 0:
+                        hourly_cal_data.append({
+                            'x': f"{hour}:00",
+                            'y': hourly_cal[hour]
+                        })
+                        
+                        hourly_duration_data.append({
+                            'x': hour,
+                            'y': hourly_duration[hour],
+                            'r': min(20, max(3, hourly_duration[hour] / 3))
+                        })
+                
+                hourly_data = {
+                    'date': selected_day,
+                    'day_name': selected_date.strftime('%A'),
+                    'hourly_cal_data': hourly_cal_data,
+                    'hourly_duration_data': hourly_duration_data
+                }
+        except ValueError:
+            # Invalid date format, ignore
+            pass
+
+    # Prepare response with all data
+    response_data = {
+        'p7d_labels': p7d_labels,
+        'p7d_cal': p7d_cal,
+        'bubble_data': bubble_data,
+        'days': [day.strftime('%Y-%m-%d') for day in past_7_days]  # Provide list of selectable dates
+    }
+    
+    # Add hourly data to response if available
+    if hourly_data:
+        response_data['hourly_data'] = hourly_data
+        
+    return jsonify(response_data)
 
 
 def init_profile():

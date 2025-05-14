@@ -1,3 +1,4 @@
+
 {% extends 'main-base.html' %}
 
 {% block title %}Dashboard - Exercise Tracker{% endblock %}
@@ -5,9 +6,10 @@
 {% block page_title %}Dashboard{% endblock %}
 
 {% block content %}
-<div class="main-content-boxes dashboard container-fluid">
-    <div class="row">
-        <div class="col-12 col-md-6 mb-4 custom-cell">
+<div class="main-content-boxes dashboard container-fluid p-0">
+    <div class="row g-0">
+        <!-- User welcome box -->
+        <div class="col-12 col-md-6 mb-3 custom-cell">
             <div class="box first-box">
                 <div class="box-section1">
                     <div class="box-title">
@@ -46,7 +48,9 @@
                 </div>
             </div>
         </div>
-        <div class="col-12 col-md-6 mb-4 custom-cell">
+        
+        <!-- AI Training Assistant box -->
+        <div class="col-12 col-md-6 mb-3 custom-cell">
             <div class="box">
                 <h4 class="mb-3">🤖 Ask Your Training Assistant</h4>
                 <div class="chat-box mb-3" id="chat-window">
@@ -58,19 +62,68 @@
                     <button id="send-btn" class="btn btn-primary">Send</button>
                 </div>
             </div>
-
         </div>
-        <div class="col-12 col-md-6 mb-4 custom-cell">
-            <div class="box">
-                <canvas id="myChart" class="w-100" height="400"></canvas>
+        
+        <!-- Chart view controls - Horizontal layout with no bottom margin -->
+        <div class="col-12 mb-0 pb-0 view-controls">
+            <div class="box p-2 mb-0">
+                <div class="row g-0">
+                    <div class="col-md-6">
+                        <div class="form-group mb-0">
+                            <label for="viewToggle" class="me-2">View Mode:</label>
+                            <select id="viewToggle" class="form-control form-control-sm d-inline-block" style="width: auto;">
+                                <option value="daily">Daily View</option>
+                                <option value="hourly">Hourly View</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-0">
+                            <label for="daySelector" class="me-2">Select Day for Hourly View:</label>
+                            <select id="daySelector" class="form-control form-control-sm d-inline-block" style="width: auto;">
+                                <!-- Will be populated by JavaScript -->
+                            </select>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="col-12 col-md-6 mb-4 custom-cell">
-            <div class="box">
-                <canvas id="bubbleChart" class="w-100" height="400"></canvas>
+        
+        <!-- Daily charts section - Directly attached to controls -->
+        <div id="dailyChartSection" class="row g-0 mt-0 pt-0 chart-row">
+            <div class="col-12 col-md-6 mt-0 pt-0 mb-0 chart-container">
+                <div class="box mt-0 pt-0">
+                    <canvas id="myChart" class="w-100" height="300"></canvas>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 mt-0 pt-0 mb-0 chart-container">
+                <div class="box mt-0 pt-0">
+                    <canvas id="bubbleChart" class="w-100" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hourly charts section - Directly attached to controls -->
+        <div id="hourlyChartSection" class="row g-0 mt-0 pt-0 chart-row" style="display: none;">
+            <div class="col-12 mt-0 pt-0 mb-0 hourly-data-title">
+                <h5 id="hourlyChartTitle" class="mb-0 mt-0 pt-0">Hourly Data</h5>
+                <div id="noHourlyDataMessage" style="display: none;" class="alert alert-info py-2 mt-0">
+                    No exercise data recorded for this day. Try selecting another day or add some exercises!
+                </div>
+            </div>
+            <div class="col-12 col-md-6 mt-0 pt-0 mb-0 chart-container">
+                <div class="box mt-0 pt-0">
+                    <canvas id="hourlyKcalChart" class="w-100" height="300"></canvas>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 mt-0 pt-0 mb-0 chart-container">
+                <div class="box mt-0 pt-0">
+                    <canvas id="hourlyTimeChart" class="w-100" height="300"></canvas>
+                </div>
             </div>
         </div>
     </div>
 </div>
+
 <script src="{{ url_for('static', filename='script/dashboard.js') }}"></script>
 {% endblock %}

@@ -1,3 +1,6 @@
+.dashboard .container-fluid {
+    padding: 0 !important;
+}
 .card.all {
     background: linear-gradient(to right, #ffe082, #fff3cd);
 }
@@ -72,4 +75,146 @@
     text-align: left;
     float: left;
     clear: both;
+}
+
+/* Additional styles to completely eliminate spacing */
+.dashboard .form-control-sm {
+    height: calc(1.5em + 0.5rem + 2px);
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+}
+
+.dashboard .box {
+    margin-bottom: 0 !important;
+    padding: 10px;
+}
+
+/* Remove ALL gaps between controls and charts */
+.dashboard #dailyChartSection, 
+.dashboard #hourlyChartSection {
+    margin-top: -20px !important;
+    padding-top: 0 !important;
+}
+
+/* Fix for the red box area - eliminate the gap */
+.dashboard .main-content-boxes .row + .row {
+    margin-top: -20px !important;
+}
+
+/* Ensure no extra padding in container */
+.dashboard .container-fluid {
+    padding: 0 !important;
+}
+
+/* Reduce row gutters */
+.dashboard .g-3 {
+    --bs-gutter-y: 0 !important;
+}
+
+/* Force elements to stack directly */
+.dashboard .mb-0 {
+    margin-bottom: 0 !important;
+}
+
+.dashboard .mt-0 {
+    margin-top: 0 !important;
+}
+
+.dashboard .pt-0 {
+    padding-top: 0 !important;
+}
+
+.dashboard .pb-0 {
+    padding-bottom: 0 !important;
+}
+
+/* Fix for any potential browser default margins */
+.dashboard body, 
+.dashboard html {
+    margin: 0;
+    padding: 0;
+}
+
+/* Compact chart containers */
+.dashboard .chart-container {
+    margin-top: -20px !important;
+    padding-top: 0 !important;
+}
+
+/* Remove spacing between view controls and charts */
+.dashboard .view-controls {
+    margin-bottom: -20px !important;
+    padding-bottom: 0 !important;
+}
+
+/* Ensure charts are directly attached to controls */
+.dashboard .chart-row {
+    margin-top: -20px !important;
+}
+
+/* Eliminate all vertical spacing in the dashboard */
+.dashboard .row {
+    margin-bottom: 0 !important;
+}
+
+/* Reduce spacing in hourly data title */
+.dashboard #hourlyChartTitle {
+    margin-top: 0 !important;
+    margin-bottom: 5px !important;
+    display: block;
+    clear: both;
+}
+
+/* Aggressive spacing reduction for the main red box area */
+.dashboard .main-content-boxes > .row > .col-12:nth-child(3) + .col-12,
+.dashboard .main-content-boxes > .row > #dailyChartSection,
+.dashboard .main-content-boxes > .row > #hourlyChartSection {
+    margin-top: -40px !important;
+}
+
+/* Force chart titles to be closer to controls */
+.dashboard .hourly-data-title {
+    margin-top: 0 !important;
+    padding-top: 10px !important;
+    padding-bottom: 5px !important;
+    clear: both;
+}
+
+/* Ensure chart titles don't overlap */
+.dashboard .chart-title {
+    display: block;
+    margin-bottom: 10px !important;
+    font-weight: bold;
+    clear: both;
+}
+
+/* Separate hourly chart titles to prevent overlap */
+.dashboard #hourlyKcalChart,
+.dashboard #hourlyTimeChart {
+    margin-top: 10px !important;
+}
+
+/* Eliminate any margin that might be added by Bootstrap */
+.dashboard .row > [class*="col-"] {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+/* Collapse vertical space between elements */
+.dashboard .box + .box,
+.dashboard .row + .row {
+    margin-top: -20px !important;
+}
+
+/* Ensure view controls are tightly packed */
+.dashboard .view-controls .box {
+    padding-bottom: 0 !important;
+    margin-bottom: -20px !important;
+}
+
+/* Force chart sections to start immediately after controls */
+.dashboard #dailyChartSection,
+.dashboard #hourlyChartSection {
+    position: relative;
+    top: -20px;
 }
