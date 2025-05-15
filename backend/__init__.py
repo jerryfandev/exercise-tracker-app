@@ -7,6 +7,7 @@ from backend.models import User
 import os
 from flask_wtf.csrf import CSRFProtect
 from dotenv import load_dotenv
+from flask_migrate import Migrate
 
 # Load environment variables from .env file
 load_dotenv()
@@ -34,6 +35,8 @@ def create_app(config_class=Config):
         pass
 
     db.init_app(app)
+    migrate = Migrate(app, db)
+    
     login_manager = LoginManager()
     login_manager.init_app(app)
 
