@@ -11,14 +11,19 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
-def create_app():
+def create_app(config_class=Config):
     app = Flask(
         __name__,
         template_folder='../frontend',
         static_folder='../frontend',
     )
 
-    app.config.from_object(Config)
+    # Use TestConfig when in testing mode
+    if os.environ.get('FLASK_ENV') == 'testing':
+        from .config import TestConfig
+        app.config.from_object(TestConfig)
+    else:
+        app.config.from_object(config_class)
     
     # Initialize CSRF protection
     csrf = CSRFProtect(app)  # "This 'entry point' enforces CSRF protection by generating and validating CSRF tokens for all requests."
