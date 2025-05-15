@@ -7,18 +7,24 @@ from backend.models import User
 import os
 from flask_wtf.csrf import CSRFProtect
 from dotenv import load_dotenv
+from flask_migrate import Migrate
 
 # Load environment variables from .env file
 load_dotenv()
 
-def create_app():
+def create_app(config_class=Config):
     app = Flask(
         __name__,
         template_folder='../frontend',
         static_folder='../frontend',
     )
 
-    app.config.from_object(Config)
+    # Use TestConfig when in testing mode
+    if os.environ.get('FLASK_ENV') == 'testing':
+        from .config import TestConfig
+        app.config.from_object(TestConfig)
+    else:
+        app.config.from_object(config_class)
     
     # Initialize CSRF protection
     csrf = CSRFProtect(app)  # "This 'entry point' enforces CSRF protection by generating and validating CSRF tokens for all requests."
@@ -29,6 +35,8 @@ def create_app():
         pass
 
     db.init_app(app)
+    migrate = Migrate(app, db)
+    
     login_manager = LoginManager()
     login_manager.init_app(app)
 
@@ -37,16 +45,20 @@ def create_app():
     def load_user(user_id):
         return User.query.get(int(user_id))
 
-    # ✅ Auto-create DB if it doesn't exist
+    # ✅ Auto-create DB if it doesn't exist (only in development)
     with app.app_context():
         db_uri = app.config['SQLALCHEMY_DATABASE_URI']
         if db_uri.startswith('sqlite:///'):
             db_path = db_uri.replace('sqlite:///', '')
             if not os.path.exists(db_path):
-                print("🆕 Creating new database:", db_path)
-                db.create_all()
+                print(f"⚠️  Database not found at {db_path}")
+                if app.config.get("ENV") == "development":
+                    print("🧪 Running db.create_all() — development only"); db.create_all()
+                else:
+                    print("❌ Skipping db.create_all(): Not in development mode"); print("💡 Run `flask db upgrade` to create the schema")
             else:
-                print("✅ Database already exists:", db_path)
+                print(f"✅ Database found at {db_path}")
+
 
     # 📌 Inject `user` into all templates
     @app.context_processor

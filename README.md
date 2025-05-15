@@ -81,15 +81,26 @@ pip install -r requirements.txt
   ```bash
   
   ```
+### 4. Database Setup (Only on First Time Setup or New Device)
 
-  
+If you're running the app for the first time **on a new machine** (i.e. `app.db` does not exist), you must apply the database schema using Flask-Migrate:
 
-### 4. Run the Flask Application
+```bash
+# Make sure your virtualenv is activated
+source venv/bin/activate
+
+# Set the Flask app context (if not already set)
+export FLASK_APP=run.py
+
+# Run migrations to create the database schema
+flask db upgrade
+```
+### 5. Run the Flask Application
 
 ```bash
 python run.py
 ```
-### 5. Results
+### 6. Results
 
 ```
 http://127.0.0.1:5000
