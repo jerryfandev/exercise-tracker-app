@@ -110,6 +110,37 @@
                         </div>
                     </div>
 
+                    <!-- Sharing -->
+                    <div class="form-group row mb-2 d-flex align-items-center">
+                        <label class="col-sm-3 col-form-label" for="weight_kg"><strong>Sharing:</strong></label>
+                        <div class="col-sm-9">
+                            <span class="view-mode">{{ user.sharings }}</span>
+                            <div class="dropdown edit-mode d-none">
+                                <button class="btn btn-primary dropdown-toggle" type="button" id="sharingDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Sharing Options
+                                </button>
+                                <div class="dropdown-menu p-3" aria-labelledby="sharingDropdown" style="min-width: 250px;">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="share_details" id="share_details" {% if user.share_details %}checked{% endif %}>
+                                        <label class="form-check-label" for="share_details">Share details</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="share_achievements" id="share_achievements" {% if user.share_achievements %}checked{% endif %}>
+                                        <label class="form-check-label" for="share_achievements">Share achievements</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="share_calories" id="share_calories" {% if user.share_calories %}checked{% endif %}>
+                                        <label class="form-check-label" for="share_calories">Share calories</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="share_minutes" id="share_minutes" {% if user.share_minutes %}checked{% endif %}>
+                                        <label class="form-check-label" for="share_minutes">Share minutes</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Last Login -->
                     <div class="form-group row mb-2 d-flex align-items-center view-mode">
                         <label class="col-sm-3 col-form-label"><strong>Last Login:</strong></label>
@@ -312,6 +343,13 @@
             }
 
             $container.removeClass('d-none');
+        });
+
+        document.querySelectorAll('.dropdown-menu')
+            .forEach(el => {
+            el.addEventListener('click', function (e) {
+                e.stopPropagation();
+            });
         });
     });
 </script>

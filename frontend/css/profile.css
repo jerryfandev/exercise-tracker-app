@@ -58,6 +58,16 @@
     background-color: unset;
 }
 
+.profile .dropdown-menu {
+    input, label {
+        cursor: pointer;
+    }
+    label {
+        padding-left: 0;
+        margin-left: 10px;
+    }
+}
+
 #bmi-result-container {
     border: unset;
 }
