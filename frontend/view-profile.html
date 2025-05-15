@@ -64,6 +64,7 @@
             {% if current_user.is_friend_with(profile_user) %}
             <div class="col-md-5 profile-container">
                 <h4 class="ps-3"><span class="trophy">ℹ️</span> Details</h4>
+                {% if profile_user.share_details %}
                 <!-- Username -->
                 <div class="form-group row mb-2 d-flex align-items-center">
                     <label class="col-sm-3 col-form-label"><strong>Username:</strong></label>
@@ -134,40 +135,52 @@
                         </span>
                     </div>
                 </div>
+                {% else %}
+                    <p class="text-muted ms-4">Details are private.</p>
+                {% endif %}
             </div>
             <div class="col-md-4 profile-container">
-                    <h4><span class="trophy">🏆</span> Achievements</h4>
-                    <div class="achievement-section">
-                        {% if achievements %}
-                            {% for achievement in achievements %}
-                            <div class="card {{ achievement.exercise_type|lower }}">
-                                <div class="icon">{{ achievement.icon }}</div>
-                                <div class="content">
-                                    <div><strong>{{ achievement.description }}</strong></div>
-                                    <div class="date">({{ achievement.achieved_at.strftime('%Y-%m-%d %H:%M') }})</div>
-                                </div>
+                <h4><span class="trophy">🏆</span> Achievements</h4>
+                {% if profile_user.share_achievements %}
+                <div class="achievement-section">
+                    {% if achievements %}
+                        {% for achievement in achievements %}
+                        <div class="card {{ achievement.exercise_type|lower }}">
+                            <div class="icon">{{ achievement.icon }}</div>
+                            <div class="content">
+                                <div><strong>{{ achievement.description }}</strong></div>
+                                <div class="date">({{ achievement.achieved_at.strftime('%Y-%m-%d %H:%M') }})</div>
                             </div>
-                            {% endfor %}
-                        {% else %}
-                            <p class="text-muted">No achievements found.</p>
-                        {% endif %}
-                    </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">No achievements found.</p>
+                    {% endif %}
                 </div>
+                {% else %}
+                    <p class="text-muted ms-4">Achievements are private.</p>
+                {% endif %}
+            </div>
             {% endif %}
         </div>
         {% if current_user.is_friend_with(profile_user) %}
-        <div class="row justify-content-center mt-4">
-            <div class="col-12 col-md-6 mb-4 custom-cell">
-                <div class="box">
-                    <canvas id="viewKcalChart" class="w-100" height="400"></canvas>
+            {% set shared_chart_count = (1 if profile_user.share_calories else 0) + (1 if profile_user.share_minutes else 0) %}
+            <div class="row justify-content-center mt-4">
+                {% if profile_user.share_calories %}
+                <div class="col-12 {{ 'col-md-12' if shared_chart_count == 1 else 'col-md-6' }} mb-4 custom-cell">
+                    <div class="box">
+                        <canvas id="viewKcalChart" class="w-100" height="400"></canvas>
+                    </div>
                 </div>
-            </div>
-            <div class="col-12 col-md-6 mb-4 custom-cell">
-                <div class="box">
-                    <canvas id="viewBubbleChart" class="w-100" height="400"></canvas>
+                {% endif %}
+                {% if profile_user.share_minutes %}
+                <div class="col-12 {{ 'col-md-12' if shared_chart_count == 1 else 'col-md-6' }} mb-4 custom-cell">
+                    <div class="box">
+                        <canvas id="viewBubbleChart" class="w-100" height="400"></canvas>
+                    </div>
                 </div>
+                {% endif %}
             </div>
-        </div>
         {% endif %}
         {% if not current_user.is_friend_with(profile_user) %}
         <div class="text-center mt-5">

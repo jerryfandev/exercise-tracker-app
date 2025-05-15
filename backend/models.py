@@ -41,6 +41,12 @@ class User(db.Model, UserMixin):
     last_login = db.Column(db.DateTime, nullable=True)
     is_active = db.Column(db.Boolean, default=True)
 
+    # Optional shared data
+    share_details = db.Column(db.Boolean, default=True)
+    share_achievements = db.Column(db.Boolean, default=True)
+    share_calories = db.Column(db.Boolean, default=True)
+    share_minutes = db.Column(db.Boolean, default=True)
+
     # Method to update the last login timestamp
     def update_last_login(self):
         """

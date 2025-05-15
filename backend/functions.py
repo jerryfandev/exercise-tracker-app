@@ -172,6 +172,7 @@ def init_profile():
     # Get the current user from the session
     user = User.query.get(session['user_id'])
     achievements = get_achievements(session['user_id'])
+    user.sharings = get_sharing_string(user)
 
     # Add icon for each exercise type
     for achievement in achievements:
@@ -223,6 +224,10 @@ def init_profile():
         new_height_cm = request.form.get('height_cm')
         new_weight_kg = request.form.get('weight_kg')
         new_profile_image = request.files.get('profile_image')
+        share_details = bool(request.form.get('share_details'))
+        share_achievements = bool(request.form.get('share_achievements'))
+        share_calories = bool(request.form.get('share_calories'))
+        share_minutes = bool(request.form.get('share_minutes'))
 
         # Profile image
         if new_profile_image and new_profile_image.filename != '':
@@ -267,6 +272,11 @@ def init_profile():
             except ValueError:
                 flash('Invalid weight format. Please enter a valid number.', 'danger')
                 return redirect(url_for('profile'))
+
+        user.share_details = share_details
+        user.share_achievements = share_achievements
+        user.share_calories = share_calories
+        user.share_minutes = share_minutes
 
         # Commit the changes to the database
         try:
@@ -441,3 +451,15 @@ def handle_respond_request(user_id, response):
 def get_achievements(user_id):
     return Achievement.query.filter_by(user_id=user_id) \
         .order_by(Achievement.achieved_at.desc()).all()
+
+def get_sharing_string(user):
+    parts = []
+    if user.share_details:
+        parts.append("Details")
+    if user.share_achievements:
+        parts.append("Achievements")
+    if user.share_calories:
+        parts.append("Calories")
+    if user.share_minutes:
+        parts.append("Minutes")
+    return ", ".join(parts) if parts else "Nothing"
