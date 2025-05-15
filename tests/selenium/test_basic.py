@@ -1,43 +1,52 @@
 import unittest
-import threading
+import multiprocessing
 import time
 
 from selenium import webdriver
-from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 
 from backend import create_app, db
+from backend.models import User
 
-def run_app():
-    app = create_app()
-    app.run(port=5001)
+# Flask setup
+PORT = 5001
+localHost = f"http://localhost:{PORT}/"
+testApp = create_app()
 
-class BasicSeleniumTest(unittest.TestCase):
+def run_flask_server():
+    testApp.run(port=PORT)
 
-    @classmethod
-    def setUpClass(cls):
-        cls.server_thread = threading.Thread(target=run_app)
-        cls.server_thread.daemon = True
-        cls.server_thread.start()
-        time.sleep(1)
+class SeleniumTests(unittest.TestCase):
+
+    def setUp(self):
+        self.app_context = testApp.app_context()
+        self.app_context.push()
+
+        db.create_all()
+        self.add_test_data()
+
+        # ✅ Launch Flask using multiprocessing with a top-level function
+        self.server_process = multiprocessing.Process(target=run_flask_server)
+        self.server_process.start()
+        time.sleep(1)  # wait for server to boot
 
         options = Options()
-        #options.add_argument("--headless")
-        options.add_argument("--no-sandbox")
+        # options.add_argument("--headless")
+        self.driver = webdriver.Chrome(options=options)
+        self.driver.get(localHost)
 
-        cls.driver = webdriver.Chrome(options=options)
-        cls.driver.implicitly_wait(5)
+    def tearDown(self):
+        time.sleep(5)  # for visibility
+        self.driver.quit()
+        self.server_process.terminate()
+        self.app_context.pop()
 
-    @classmethod
-    def tearDownClass(cls):
-        time.sleep(5)  # Keep browser open for 5 seconds
+    def add_test_data(self):
+        # No test data yet, placeholder for login test
+        pass
 
-        cls.driver.quit()
-
-    def test_homepage_loads(self):
-        self.driver.get("http://localhost:5001/")
+    def test_homepage_has_login_button(self):
         self.assertIn("Log In", self.driver.page_source)
 
 if __name__ == "__main__":
     unittest.main()
-
