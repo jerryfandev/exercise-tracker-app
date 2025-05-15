@@ -45,16 +45,20 @@ def create_app(config_class=Config):
     def load_user(user_id):
         return User.query.get(int(user_id))
 
-    # ✅ Auto-create DB if it doesn't exist
+    # ✅ Auto-create DB if it doesn't exist (only in development)
     with app.app_context():
         db_uri = app.config['SQLALCHEMY_DATABASE_URI']
         if db_uri.startswith('sqlite:///'):
             db_path = db_uri.replace('sqlite:///', '')
             if not os.path.exists(db_path):
-                print("🆕 Creating new database:", db_path)
-                db.create_all()
+                print(f"⚠️  Database not found at {db_path}")
+                if app.config.get("ENV") == "development":
+                    print("🧪 Running db.create_all() — development only"); db.create_all()
+                else:
+                    print("❌ Skipping db.create_all(): Not in development mode"); print("💡 Run `flask db upgrade` to create the schema")
             else:
-                print("✅ Database already exists:", db_path)
+                print(f"✅ Database found at {db_path}")
+
 
     # 📌 Inject `user` into all templates
     @app.context_processor
