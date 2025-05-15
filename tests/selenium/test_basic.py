@@ -22,7 +22,7 @@ class BasicSeleniumTest(unittest.TestCase):
         time.sleep(1)
 
         options = Options()
-        options.add_argument("--headless")
+        #options.add_argument("--headless")
         options.add_argument("--no-sandbox")
 
         cls.driver = webdriver.Chrome(options=options)
@@ -30,6 +30,8 @@ class BasicSeleniumTest(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        time.sleep(5)  # Keep browser open for 5 seconds
+
         cls.driver.quit()
 
     def test_homepage_loads(self):
