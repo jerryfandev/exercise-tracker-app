@@ -83,21 +83,24 @@ pip install -r requirements.txt
  # Run all Selenium tests
  python -m pytest tests/selenium/
 
- # Run a specific Selenium test
- python -m pytest tests/selenium/test_homepage.py
- python -m pytest tests/selenium/test_register_success.py
- python -m pytest tests/selenium/test_login_success.py
- python -m pytest tests/selenium/test_login_failure.py
+# Run a specific Selenium test
+python -m pytest tests/selenium/test_homepage.py
+python -m pytest tests/selenium/test_register_success.py
+python -m pytest tests/selenium/test_login_success.py
+python -m pytest tests/selenium/test_login_failure.py
+python -m pytest tests/selenium/test_profileUpdate_access.py
 
 
 
- # Run with detailed output
- python -m pytest tests/selenium/test_homepage.py -v
- python -m pytest tests/selenium/test_register_success.py -v
- python -m pytest tests/selenium/test_login_success.py -v
- python -m pytest tests/selenium/test_login_failure.py -v
 
- ```
+# Run with detailed output
+python -m pytest tests/selenium/test_homepage.py -v
+python -m pytest tests/selenium/test_register_success.py -v
+python -m pytest tests/selenium/test_login_success.py -v
+python -m pytest tests/selenium/test_login_failure.py -v
+python -m pytest tests/selenium/test_profileUpdate_access.py -v
+```
+
 ### 4. Database Setup (Only on First Time Setup or New Device)
 
 If you're running the app for the first time **on a new machine** (i.e. `app.db` does not exist), you must apply the database schema using Flask-Migrate:
