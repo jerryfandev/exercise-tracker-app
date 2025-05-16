@@ -90,9 +90,6 @@ python -m pytest tests/selenium/test_login_success.py
 python -m pytest tests/selenium/test_login_failure.py
 python -m pytest tests/selenium/test_profileUpdate_access.py
 
-
-
-
 # Run with detailed output
 python -m pytest tests/selenium/test_homepage.py -v
 python -m pytest tests/selenium/test_register_success.py -v
@@ -130,8 +127,6 @@ $env:FLASK_ENV="development"
 flask --app run.py db upgrade
 ```
 
-
-
 ### 5. Run the Flask Application
 
 ```bash
@@ -148,13 +143,14 @@ http://localhost:5000
 - `.venv/` and `.idea/` folders are excluded from version control via `.gitignore`.
 - Always activate your virtual environment before running the app or installing dependencies.
 
-## 📁 Sample Folder Structure (to be updated)
+## 📁 Sample Folder Structure
 ```bash
 exercise-tracker-app/
 │
 ├── backend/
 │   ├── __init__.py        # App initialization, configuration and context handling
 │   ├── config.py          # Configuration settings
+│   ├── forms.py           # Form classes
 │   ├── functions.py       # Core business logic functions
 │   ├── models.py          # Database model definitions
 │   └── routes.py          # Route definitions and handlers
@@ -164,6 +160,7 @@ exercise-tracker-app/
 │   │   ├── avatar.png     # Default avatar
 │   │   ├── favicon.ico    # Website icon
 │   │   ├── landing.png    # Landing page image
+│   │   ├── sidebar.png    # Sidebar background image
 │   │   └── welcome.png    # Welcome page image
 │   │
 │   ├── css/
@@ -173,13 +170,21 @@ exercise-tracker-app/
 │   │   ├── main.css       # Main styles
 │   │   ├── mobile.css     # Mobile responsive styles
 │   │   └── presets.css    # Preset styles
+│   │   ├── profile.css    # Profile page styles
+│   │   └── sharing.css    # Sharing page styles
+│   │
+│   ├── modals/
+│   │   ├── logout.html       # Logout confirmation
+│   │   ├── invalidImage.html # Image validation error
 │   │
 │   ├── script/
-│   │   ├── common.js      # Common JavaScript functionality
-│   │   ├── dashboard.js   # Dashboard page functionality
-│   │   ├── login.js       # Login page functionality
-│   │   ├── main.js        # Main JavaScript functionality
-│   │   └── register.js    # Registration page functionality
+│   │   ├── common.js       # Common JavaScript functionality
+│   │   ├── dashboard.js    # Dashboard page functionality
+│   │   ├── login.js        # Login page functionality
+│   │   ├── main.js         # Main JavaScript functionality
+│   │   ├── profile.js      # Profile JavaScript functionality
+│   │   ├── register.js     # Registration page functionality
+│   │   └── view-profile.js # View other users functionality
 │   │
 │   ├── achievement.html   # Achievement page template
 │   ├── base.html          # Base HTML template
@@ -195,7 +200,7 @@ exercise-tracker-app/
 │
 ├── migrations/
 │   ├── versions/
-│   │   └── 5bd54c75d185_add_last_login_and_is_active_fields_to_.py  # Migration script
+│   │   └── a61199fbb7c7_initial_full_schema.py  # Migration script
 │   │
 │   ├── alembic.ini        # Alembic configuration
 │   ├── env.py             # Environment setup for migrations
@@ -204,7 +209,11 @@ exercise-tracker-app/
 │
 ├── tests/
 │   ├── selenium/
-│   │   └── test_homepage.py  # Homepage Selenium tests
+│       ├── test_homepage.py              # Test home page
+│       ├── test_login_failure.py         # Test login failure
+│       ├── test_login_success.py         # Test login success
+│       ├── test_profileUpdate_access.py  # Test profile update access
+│   │   └── test_register_success.py      # Test registration success
 │   │
 │   └── unit/
 │       ├── test_chart_data.py      # Chart data unit tests
@@ -212,9 +221,8 @@ exercise-tracker-app/
 │       ├── test_exercise_routes.py # Exercise routes unit tests
 │       ├── test_user_model.py      # User model unit tests
 │       └── test_user_routes.py     # User routes unit tests
-│
-├── instance/              # Instance-specific data (SQLite database)
-│   └── app.db             # SQLite database file
+│   │
+│   └── conftest.py       # Configuration for pytest
 │
 ├── run.py                # Application entry point
 ├── run_tests.py          # Test runner script
