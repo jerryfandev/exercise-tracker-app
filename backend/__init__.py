@@ -52,7 +52,7 @@ def create_app(config_class=Config):
             db_path = db_uri.replace('sqlite:///', '')
             if not os.path.exists(db_path):
                 print(f"⚠️  Database not found at {db_path}")
-                if app.config.get("ENV") == "development":
+                if app.config.get("TESTING") or app.config.get("ENV") == "development":
                     print("🧪 Running db.create_all() — development only"); db.create_all()
                 else:
                     print("❌ Skipping db.create_all(): Not in development mode"); print("💡 Run `flask db upgrade` to create the schema")

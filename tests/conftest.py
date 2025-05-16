@@ -1,21 +1,37 @@
 import pytest
 import os
+import sys
+
+# Ensure the backend module is discoverable
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from backend import create_app
 from backend.models import db
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="session")
 def app():
-    """Create and configure a Flask app for testing."""
+    """Create and configure a Flask app instance for testing."""
     os.environ["FLASK_ENV"] = "testing"
     app = create_app()
-    
-    # Create the database and tables
+
     with app.app_context():
         db.create_all()
-    
+
     yield app
-    
-    # Clean up after tests
+
+    # Teardown after tests
     with app.app_context():
         db.session.remove()
         db.drop_all()
+
+
+@pytest.fixture(scope="function")
+def client(app):
+    """A test client for the app."""
+    return app.test_client()
+
+
+@pytest.fixture(scope="function")
+def runner(app):
+    """A test CLI runner for the app."""
+    return app.test_cli_runner()
