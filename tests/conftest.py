@@ -1,7 +1,14 @@
 import pytest
 import os
+import warnings # Import the warnings module for filtering warnings 
 from backend import create_app
 from backend.models import db
+
+'''
+Ignore DeprecationWarning such as time stampdatetime.utcnow()
+If you want to keep the warnings, remove the following line.
+'''
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 @pytest.fixture(scope="session", autouse=True)
 def app():

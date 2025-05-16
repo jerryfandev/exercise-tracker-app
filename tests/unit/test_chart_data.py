@@ -1,3 +1,13 @@
+'''
+test_chart_data.py tests the chart data functionality, for example:
+
+• Whether the chart data API endpoint returns the correct data structure
+
+• Whether the chart data filtering function is working correctly
+
+• Handling of empty data
+'''
+
 import unittest
 import json
 from datetime import datetime, timedelta
