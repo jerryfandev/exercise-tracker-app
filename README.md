@@ -42,11 +42,11 @@ python -m venv venv
 # python3 -m venv venv
 ```
 #### Activate the Virtual Environment:
-###### 🍏 On macOS/Linux:
+###### **🍏 On macOS/Linux:**
 ```bash
 source venv/bin/activate
 ```
-###### 🪟 On Windows:
+###### **🪟 On Windows:**
 ```bash
 venv\Scripts\activate
 ```
@@ -85,6 +85,8 @@ pip install -r requirements.txt
 
 If you're running the app for the first time **on a new machine** (i.e. `app.db` does not exist), you must apply the database schema using Flask-Migrate:
 
+🍏 **On macOS/Linux:**
+
 ```bash
 # Make sure your virtualenv is activated
 source venv/bin/activate
@@ -95,6 +97,21 @@ export FLASK_APP=run.py
 # Run migrations to create the database schema
 flask db upgrade
 ```
+**🪟 On windows:**
+
+```
+# Make sure your virtualenv is activated
+venv\Scripts\activate
+
+# Set the Flask app context (if not already set)
+$env:FLASK_ENV="development"
+
+# Run migrations to create the database schema
+flask --app run.py db upgrade
+```
+
+
+
 ### 5. Run the Flask Application
 
 ```bash
