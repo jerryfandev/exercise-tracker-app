@@ -1,5 +1,7 @@
 import pytest
 import os
+import warnings # Import the warnings module for filtering warnings
+
 import sys
 
 # Ensure the backend module is discoverable
@@ -8,7 +10,14 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from backend import create_app
 from backend.models import db
 
-@pytest.fixture(scope="session")
+'''
+Ignore DeprecationWarning such as time stampdatetime.utcnow()
+If you want to keep the warnings, remove the following line.
+'''
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+
+@pytest.fixture(scope="session", autouse=True)
+
 def app():
     """Create and configure a Flask app instance for testing."""
     os.environ["FLASK_ENV"] = "testing"

@@ -1,3 +1,13 @@
+'''
+test_exercise_routes.py tests whether the exercise record-related routes are working correctly, for example:
+
+• Adding new exercise records
+
+• Viewing exercise records
+
+• Handling of unauthorized user access to protected routes
+'''
+
 import unittest
 from backend import create_app
 from backend.models import db, User, ExerciseLog
