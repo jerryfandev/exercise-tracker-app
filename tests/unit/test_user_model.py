@@ -1,3 +1,13 @@
+'''
+test_user_model.py tests the functionality of the User Model, for example:
+
+• Whether user creation is working correctly
+
+• Whether the password hashing function is working correctly
+
+• Whether user data is correctly saved to the database
+'''
+
 import pytest
 from backend import create_app
 from backend.models import db, User

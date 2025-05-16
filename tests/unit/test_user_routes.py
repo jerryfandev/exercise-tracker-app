@@ -1,3 +1,13 @@
+'''
+test_user_routes.py tests whether the user-related routes (API endpoints) are working correctly, for example:
+
+• User login functionality
+
+• User registration functionality
+
+• Handling of duplicate usernames
+'''
+
 import unittest
 import json
 from backend import create_app

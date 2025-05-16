@@ -69,7 +69,7 @@ pip install -r requirements.txt
   python -m pytest tests/unit/test_exercise_log.py
   python -m pytest tests/unit/test_exercise_routes.py
   python -m pytest tests/unit/test_user_model.py
-  python -m pytest tests/unit/test_user_model.py
+  python -m pytest tests/unit/test_user_routes.py
   
   # Run a specific test method.
   

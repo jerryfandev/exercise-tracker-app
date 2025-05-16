@@ -1,3 +1,13 @@
+'''
+test_exercise_log.py tests the functionality of the ExerciseLog Model, for example:
+
+• Creating exercise records
+
+• Retrieving a user's exercise records
+
+• Updating exercise records
+'''
+
 import unittest
 from datetime import datetime, timedelta
 from backend import create_app
