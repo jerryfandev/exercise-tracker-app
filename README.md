@@ -86,6 +86,8 @@ python -m pytest tests/selenium/
 # Run a specific Selenium test
 python -m pytest tests/selenium/test_homepage.py
 python -m pytest tests/selenium/test_register_success.py
+python -m pytest tests/selenium/test_login_success.py
+
 
 # Run with detailed output
 python -m pytest tests/selenium/test_homepage.py -v
