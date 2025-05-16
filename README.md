@@ -88,6 +88,8 @@ python -m pytest tests/selenium/test_homepage.py
 python -m pytest tests/selenium/test_register_success.py
 python -m pytest tests/selenium/test_login_success.py
 python -m pytest tests/selenium/test_login_failure.py
+python -m pytest tests/selenium/test_profileUpdate_access.py
+
 
 
 
@@ -96,6 +98,7 @@ python -m pytest tests/selenium/test_homepage.py -v
 python -m pytest tests/selenium/test_register_success.py -v
 python -m pytest tests/selenium/test_login_success.py -v
 python -m pytest tests/selenium/test_login_failure.py -v
+python -m pytest tests/selenium/test_profileUpdate_access.py -v
 ```
 ### 4. Database Setup (Only on First Time Setup or New Device)
 
