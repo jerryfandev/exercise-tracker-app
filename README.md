@@ -59,23 +59,17 @@ pip install -r requirements.txt
 - ##### Unit Tests
 
   ```bash
-  #Run all unit tests.
-  
+  # Run all unit tests
   python -m pytest tests/unit/
   
-  # Run a specific test file.
-  
-  python -m pytest tests/unit/test_chart_data.py
-  python -m pytest tests/unit/test_exercise_log.py
-  python -m pytest tests/unit/test_exercise_routes.py
-  python -m pytest tests/unit/test_user_model.py
-  python -m pytest tests/unit/test_user_model.py
-  
-  # Run a specific test method.
-  
-  python -m pytest tests/unit/test_user_model.py::TestUserModel::test_password_hashing
+  # Run a specific test file
+  python -m unittest tests/unit/test_user_security.py
+  python -m unittest tests/unit/test_user_routes.py
+  python -m unittest tests/unit/test_chart_data.py
+  python -m unittest tests/unit/test_exercise_log.py
+  python -m unittest tests/unit/test_achievements.py
   ```
-
+  
 - ##### Selenium Tests
 
   ```bash
