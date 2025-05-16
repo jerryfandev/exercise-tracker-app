@@ -1,6 +1,7 @@
 import pytest
 import os
 import warnings # Import the warnings module for filtering warnings
+
 import sys
 
 # Ensure the backend module is discoverable
@@ -16,6 +17,7 @@ If you want to keep the warnings, remove the following line.
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 @pytest.fixture(scope="session", autouse=True)
+
 def app():
     """Create and configure a Flask app instance for testing."""
     os.environ["FLASK_ENV"] = "testing"
