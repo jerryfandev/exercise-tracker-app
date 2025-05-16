@@ -23,7 +23,7 @@ $(function () {
         $spinner.removeClass('d-none');
         $buttonText.addClass('d-none');
 
-        fetch('/login', {
+        fetch('/main/login', {
             method: 'POST',
             body: formData,
             headers: {
@@ -36,7 +36,7 @@ $(function () {
                 setTimeout(() => {
                     if (data.success) {
                         $success.removeClass('d-none');
-                        window.location.href = '/dashboard';
+                        window.location.href = '/main/dashboard';
                     } else {
                         $failure.removeClass('d-none')
                             .text(data.message || 'Invalid username or password!');

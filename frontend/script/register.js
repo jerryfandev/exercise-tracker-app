@@ -18,7 +18,7 @@ $(function () {
         $spinner.removeClass('d-none');
         $buttonText.addClass('d-none');
         
-        fetch('/register', {
+        fetch('/main/register', {
             method: 'POST',
             body: formData,
             headers: {
@@ -34,7 +34,7 @@ $(function () {
                         $button.prop('disabled', false);
                         $spinner.addClass('d-none');
                         $buttonText.removeClass('d-none');
-                        window.location.href = '/login';
+                        window.location.href = '/main/login';
                     }, 2000);
                 } else {
                     // If registration fails, show the error message

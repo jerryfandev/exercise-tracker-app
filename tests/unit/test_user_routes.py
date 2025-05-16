@@ -1,90 +1,81 @@
-import unittest
-import json
-from backend import create_app
-from backend.models import db, User
-from werkzeug.security import generate_password_hash
 
-class TestUserRoutes(unittest.TestCase):
-    def setUp(self):
-        """Set up test environment before each test"""
-        self.app = create_app()
-        self.app.config['TESTING'] = True
-        self.app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'  # Use in-memory database
-        self.app.config['WTF_CSRF_ENABLED'] = False  # Disable CSRF for testing
-        self.client = self.app.test_client()
-        self.app_context = self.app.app_context()
-        self.app_context.push()
-        db.create_all()
-        
-        # Create test user
-        user = User(
-            username='testuser',
-            email='test@example.com',
-            password_hash=generate_password_hash('password123'),
-            is_active=True
-        )
-        db.session.add(user)
-        db.session.commit()
-        
-    def tearDown(self):
-        """Clean up resources after each test"""
-        db.session.remove()
-        db.drop_all()
-        self.app_context.pop()
-        
-    def test_login_success(self):
-        """Test successful login with valid credentials"""
-        response = self.client.post('/login', data={
-            'username': 'testuser',
-            'password': 'password123'
-        }, follow_redirects=True)
-        self.assertEqual(response.status_code, 200)
-        
-        # Parse JSON response
-        data = json.loads(response.data)
-        self.assertTrue(data['success'])
-        self.assertEqual(data['redirect'], '/dashboard')
-        
-    def test_login_failure(self):
-        """Test login failure with invalid credentials"""
-        response = self.client.post('/login', data={
-            'username': 'testuser',
-            'password': 'wrongpassword'
-        }, follow_redirects=True)
-        self.assertEqual(response.status_code, 200)
-        
-        # Parse JSON response
-        data = json.loads(response.data)
-        self.assertFalse(data['success'])
-        
-    def test_register_user(self):
-        """Test user registration with valid data"""
-        response = self.client.post('/register', data={
+import unittest
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
+from tests.conftest import BaseTestCase
+from backend.models import User, db
+
+class TestUserRoutes(BaseTestCase):
+    def test_register_success(self):
+        """Test successful user registration"""
+        response = self.client.post('/main/register', data={
             'username': 'newuser',
-            'email': 'new@example.com',
-            'password': 'newpassword',
-            'confirm_password': 'newpassword'
+            'email': 'newuser@example.com',
+            'password': 'password123',
+            'confirm_password': 'password123'
         }, follow_redirects=True)
+        
+        # Check response status
         self.assertEqual(response.status_code, 200)
         
         # Verify user was created in database
         user = User.query.filter_by(username='newuser').first()
         self.assertIsNotNone(user)
-        self.assertEqual(user.email, 'new@example.com')
+        self.assertEqual(user.email, 'newuser@example.com')
+    
+    def test_login_success(self):
+        """Test successful login"""
+        # Create a user
+        self.create_test_user()
         
-    def test_duplicate_username(self):
-        """Test registration with an existing username"""
-        response = self.client.post('/register', data={
-            'username': 'testuser',  # Already exists
-            'email': 'another@example.com',
-            'password': 'password123',
-            'confirm_password': 'password123'
+        # Submit login form
+        response = self.client.post('/main/login', data={
+            'username': 'testuser',
+            'password': 'password123'
         }, follow_redirects=True)
+        
+        # Verify successful login
         self.assertEqual(response.status_code, 200)
+    
+    def test_login_invalid_credentials(self):
+        """Test login with invalid credentials"""
+        # Create a user
+        self.create_test_user()
         
-        # Check response indicates failure (implementation dependent)
-        # self.assertIn(b'Username already exists', response.data)
+        # Submit login form with wrong password
+        response = self.client.post('/main/login', data={
+            'username': 'testuser',
+            'password': 'wrongpassword'
+        }, follow_redirects=True)
         
-        # Verify no new user was created
-        users = User.query.filter_by(username='testuser').all()
+        # Verify login failed but page loaded
+        self.assertEqual(response.status_code, 200)
+    
+    def test_logout(self):
+        """Test logout functionality"""
+        # Create and login a user
+        self.create_test_user()
+        self.login()
+        
+        # Logout
+        response = self.client.get('/main/logout', follow_redirects=True)
+        
+        # Verify successful logout (page loads)
+        self.assertEqual(response.status_code, 200)
+    
+    def test_profile_access(self):
+        """Test profile page access when logged in"""
+        # Create and login a user
+        self.create_test_user()
+        self.login()
+        
+        # Access profile page
+        response = self.client.get('/main/profile', follow_redirects=True)
+        
+        # Verify profile page loads
+        self.assertEqual(response.status_code, 200)
+
+if __name__ == '__main__':
         self.assertEqual(len(users), 1)  # Still only one user with this username

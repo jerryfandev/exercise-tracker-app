@@ -46,6 +46,40 @@
                         <span class="badge bg-info">Pending Approval</span>
                     {% endif %}
                 </div>
+                <div class="d-flex justify-content-between mt-3">
+                    {% if user.is_friend %}
+                        <a href="{{ url_for('main.view_others', username=user.username) }}" class="btn btn-outline-primary">View Profile</a>
+                        <form action="{{ url_for('main.remove_friend') }}" method="post" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="user_id" value="{{ user.id }}">
+                            <button type="submit" class="btn btn-outline-danger">Remove Friend</button>
+                        </form>
+                    {% elif user.sent %}
+                        <button class="btn btn-secondary" disabled>Request Sent</button>
+                        <form action="{{ url_for('main.cancel_request') }}" method="post" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="user_id" value="{{ user.id }}">
+                            <button type="submit" class="btn btn-outline-danger">Cancel Request</button>
+                        </form>
+                    {% elif user.approval %}
+                        <div class="d-flex gap-2">
+                            <form action="{{ url_for('main.respond_request', user_id=user.id, response='accept') }}" method="post">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-success">Accept</button>
+                            </form>
+                            <form action="{{ url_for('main.respond_request', user_id=user.id, response='deny') }}" method="post">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-danger">Deny</button>
+                            </form>
+                        </div>
+                    {% else %}
+                        <form action="{{ url_for('main.add_friend') }}" method="post">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <input type="hidden" name="user_id" value="{{ user.id }}">
+                            <button type="submit" class="btn btn-primary">Add Friend</button>
+                        </form>
+                    {% endif %}
+                </div>
             </div>
             {% endfor %}
         </div>
@@ -56,7 +90,7 @@
 $(document).ready(function() {
     $('.profile-card').click(function() {
         const username = $(this).data('username');
-        window.location.href = `/profile/${username}`;
+        window.location.href = "{{ url_for('main.view_others', username='') }}" + username;
     });
 
     $('#searchInput').on('input', function () {

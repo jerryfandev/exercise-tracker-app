@@ -10,7 +10,7 @@
         <div class="row justify-content-between">
             <!-- Left Column: Exercise Form -->
             <div class="col-md-4">
-                <form method="POST" action="/exercise_log">
+                <form method="POST" action="{{ url_for('main.exercise_log') }}">
                     <!-- Add CSRF token -->
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     

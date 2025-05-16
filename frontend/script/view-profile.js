@@ -6,7 +6,7 @@ const username = pathParts[2];
 const kcalCanvas = document.getElementById('viewKcalChart');
 const timeCanvas = document.getElementById('viewBubbleChart');
 
-fetch(`/charts?username=${username}`)
+fetch(`/main/charts?username=${username}`)
     .then(res => res.json())
     .then(data => {
         if (kcalCanvas) {
@@ -56,7 +56,7 @@ fetch(`/charts?username=${username}`)
     });
 
 // Exercise minutes in the last 7 days
-fetch(`/charts?username=${username}`)
+fetch(`/main/charts?username=${username}`)
     .then(res => res.json())
     .then(data => {
         if (timeCanvas) {

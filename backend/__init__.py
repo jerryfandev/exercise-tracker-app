@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, redirect, url_for
 from flask_login import LoginManager
 from .models import db
 from .config import Config
@@ -27,7 +27,7 @@ def create_app(config_class=Config):
         app.config.from_object(config_class)
     
     # Initialize CSRF protection
-    csrf = CSRFProtect(app)  # "This 'entry point' enforces CSRF protection by generating and validating CSRF tokens for all requests."
+    csrf = CSRFProtect(app)
 
     try:
         os.makedirs(app.instance_path)
@@ -45,33 +45,27 @@ def create_app(config_class=Config):
     def load_user(user_id):
         return User.query.get(int(user_id))
 
-    # ✅ Auto-create DB if it doesn't exist (only in development)
-    with app.app_context():
-        db_uri = app.config['SQLALCHEMY_DATABASE_URI']
-        if db_uri.startswith('sqlite:///'):
-            db_path = db_uri.replace('sqlite:///', '')
-            if not os.path.exists(db_path):
-                print(f"⚠️  Database not found at {db_path}")
-                if app.config.get("ENV") == "development":
-                    print("🧪 Running db.create_all() — development only"); db.create_all()
-                else:
-                    print("❌ Skipping db.create_all(): Not in development mode"); print("💡 Run `flask db upgrade` to create the schema")
-            else:
-                print(f"✅ Database found at {db_path}")
-
-
-    # 📌 Inject `user` into all templates
+    # Inject `user` into all templates
     @app.context_processor
     def inject_user():
         user = None
         if 'user_id' in session:
             user = db.session.get(User, session['user_id'])
-            # Check if the user exists before accessing the avatar path.
+            # Check if user exists before accessing avatar path
             if user and not user.avatar_path:
                 user.avatar_path = 'asset/avatar.png'
         return dict(user=user)
 
-    from .routes import register_routes
-    register_routes(app)
+    # Import routes before registering blueprint
+    from . import routes
+    
+    # Register blueprint
+    from .blueprints import main
+    app.register_blueprint(main, url_prefix='/main')
+    
+    # Add root route redirect
+    @app.route('/')
+    def index():
+        return redirect(url_for('main.home'))
 
     return app

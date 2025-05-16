@@ -11,10 +11,17 @@
         Your Achievements
         <i class="bi bi-stars"></i>
     </h2>
+    {% if achievements %}
     <ul>
         {% for achievement in achievements %}
         <li><i class="bi bi-trophy"></i>{{achievement.description}} ({{achievement.achieved_at.strftime('%Y-%m-%d %H:%M')}})</li>
         {% endfor %}
     </ul>
+    {% else %}
+    <div class="alert alert-info">
+        You haven't earned any achievements yet. Start exercising to unlock them!
+    </div>
+    <a href="{{ url_for('main.exercise_log') }}" class="btn btn-primary">Log Exercise</a>
+    {% endif %}
 </div>
 {% endblock %}

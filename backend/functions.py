@@ -1,7 +1,7 @@
 from flask import abort, request, jsonify, render_template, session, redirect, url_for, flash, current_app
 from .models import db, User, ExerciseLog, Achievement, FriendRequest
 from functools import wraps
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from werkzeug.utils import secure_filename
 import os
 from flask_login import login_user
@@ -9,7 +9,7 @@ from flask_login import current_user
 from .forms import LoginForm, RegistrationForm
 
 
-def handle_login():  # Handles user login
+def handle_login():  # Handle user login
     form = LoginForm()
 
     if request.method == 'POST':
@@ -17,24 +17,24 @@ def handle_login():  # Handles user login
             username = form.username.data
             password = form.password.data
 
-            # Check if the user is a normal user
+            # Check if user is a regular user
             user = User.query.filter((User.username == username) | (User.email == username)).first()
 
             if user and user.check_password(password):
                 if not user.is_active:
                     return jsonify(success=False, message="Account is disabled. Please contact support.")
 
-                # Update the last login timestamp
-                user.last_login = datetime.utcnow()
+                # Update last login timestamp
+                user.last_login = datetime.now(UTC)
 
                 try:
                     db.session.commit()
 
-                    # Set the session
+                    # Set session
                     session['user_id'] = user.id
                     login_user(user)
 
-                    return jsonify(success=True, redirect='/dashboard')
+                    return jsonify(success=True, redirect=url_for('main.dashboard'))
                 except Exception as e:
                     db.session.rollback()
                     return jsonify(success=False, message="Login failed: " + str(e))
@@ -100,7 +100,7 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'user_id' not in session:
-            return redirect(url_for('login'))
+            return redirect(url_for('main.login'))
         return f(*args, **kwargs)
 
     return decorated_function
@@ -167,10 +167,10 @@ def init_profile():
 
     # Ensure the user is logged in
     if 'user_id' not in session:
-        return redirect(url_for('login'))
+        return redirect(url_for('main.login'))
 
     # Get the current user from the session
-    user = User.query.get(session['user_id'])
+    user = db.session.get(User, session['user_id'])
     achievements = get_achievements(session['user_id'])
     user.sharings = get_sharing_string(user)
 
@@ -197,12 +197,12 @@ def init_profile():
         # Check if current password is provided
         if not current_password:
             flash('Current password is required to update profile.', 'danger')
-            return redirect(url_for('profile'))
+            return redirect(url_for('main.profile'))
 
         # Verify if the provided password matches the stored password
         if not user.check_password(current_password):
             flash('Incorrect password. Please try again.', 'danger')
-            return redirect(url_for('profile'))
+            return redirect(url_for('main.profile'))
 
         # Debug: Check form data
         print("Form Data Received:")
@@ -257,7 +257,7 @@ def init_profile():
                 user.dob = datetime.strptime(new_dob, '%Y-%m-%d').date()  # Update DOB if valid
             except ValueError:
                 flash('Invalid DOB format. Please enter in YYYY-MM-DD format.', 'danger')
-                return redirect(url_for('profile'))
+                return redirect(url_for('main.profile'))
         if new_gender:
             user.gender = new_gender
         if new_height_cm:
@@ -265,13 +265,13 @@ def init_profile():
                 user.height_cm = float(new_height_cm)  # Convert height to float
             except ValueError:
                 flash('Invalid height format. Please enter a valid number.', 'danger')
-                return redirect(url_for('profile'))
+                return redirect(url_for('main.profile'))
         if new_weight_kg:
             try:
                 user.weight_kg = float(new_weight_kg)  # Convert weight to float
             except ValueError:
                 flash('Invalid weight format. Please enter a valid number.', 'danger')
-                return redirect(url_for('profile'))
+                return redirect(url_for('main.profile'))
 
         user.share_details = share_details
         user.share_achievements = share_achievements
@@ -282,12 +282,12 @@ def init_profile():
         try:
             db.session.commit()
             flash('Profile updated successfully!', 'success')
-            return redirect(url_for('profile'))  # Redirect to profile page to see updated data
+            return redirect(url_for('main.profile'))  # Redirect to profile page to see updated data
         except Exception as e:
             print(f"Error during commit: {e}")  # Debugging: Print the error
             db.session.rollback()
             flash('Profile update failed. Please try again later.', 'danger')
-            return redirect(url_for('profile'))
+            return redirect(url_for('main.profile'))
 
     # If GET request, just render the profile page with the user's current data
     return render_template('profile.html', achievements=achievements)
@@ -298,7 +298,7 @@ def view_profile(username):
     if not user:
         return render_template('view-profile.html')
     if current_user.is_authenticated and user.id == current_user.id:
-        return redirect(url_for('profile'))
+        return redirect(url_for('main.profile'))
     achievements = get_achievements(user.id)
 
     # Add icon for each exercise type
@@ -337,15 +337,15 @@ def init_sharing():
 
 
 def handle_exercise_log():
-    # Ensure the user is logged in
+    # Ensure user is logged in
     if 'user_id' not in session:
-        return redirect(url_for('login'))
+        return redirect(url_for('main.login'))
 
     user_id = session['user_id']
 
     if request.method == 'POST':
-        # Validate CSRF token (Flask-WTF handles this automatically)
-        exercise_type = request.form['exercise_type']
+        # CSRF token validation (handled automatically by Flask-WTF)
+        exercise_type = request.form['exercise_type'].lower()  # 转换为小写
         duration = int(request.form['duration'])
         calories = int(request.form['calories'])
 
@@ -353,20 +353,29 @@ def handle_exercise_log():
         db.session.add(log)
         db.session.commit()
 
-        # achievement for each type
-        thresholds = range(500, 5001, 500)
+        # Add debugging print statement
+        print(f"Adding exercise log: {exercise_type}, {duration} minutes, {calories} calories")
+
+    
+        thresholds = [50, 100, 200, 500, 1000, 2000, 5000]
+        
+        # Caculate total duration for the specific exercise type
         sum_type_duration = db.session.query(db.func.sum(ExerciseLog.duration)) \
-                                .filter_by(user_id=user_id, exercise_type=exercise_type).scalar() or 0
+                                .filter(ExerciseLog.user_id == user_id, 
+                                        db.func.lower(ExerciseLog.exercise_type) == exercise_type).scalar() or 0
+        
+        print(f"Total duration for {exercise_type}: {sum_type_duration} minutes")
 
         for threshold in thresholds:
-            # check if the achievement already exists
-            existing = Achievement.query.filter_by(
-                user_id=user_id,
-                exercise_type=exercise_type,
-                description=f"Accumulate {threshold} minutes of {exercise_type}!"
+            # Check if the achievement already exists
+            existing = Achievement.query.filter(
+                Achievement.user_id == user_id,
+                db.func.lower(Achievement.exercise_type) == exercise_type,
+                Achievement.description == f"Accumulate {threshold} minutes of {exercise_type}!"
             ).first()
 
             if sum_type_duration >= threshold and not existing:
+                print(f"Adding achievement: Accumulate {threshold} minutes of {exercise_type}!")
                 achievement = Achievement(
                     user_id=user_id,
                     exercise_type=exercise_type,
@@ -374,20 +383,21 @@ def handle_exercise_log():
                 )
                 db.session.add(achievement)
 
-        # achievement for all types
-        # calculate the total duration for all exercise types
-        # check if the achievement already exists
+        # Calculate total duration for all exercise types
         sum_all_duration = db.session.query(db.func.sum(ExerciseLog.duration)) \
                                .filter_by(user_id=user_id).scalar() or 0
+        
+        print(f"Total duration for all exercise types: {sum_all_duration} minutes")
 
         for threshold in thresholds:
-            existing_all = Achievement.query.filter_by(
-                user_id=user_id,
-                exercise_type='ALL',
-                description=f"Accumulate {threshold} total minutes of all exercise types!"
+            existing_all = Achievement.query.filter(
+                Achievement.user_id == user_id,
+                db.func.lower(Achievement.exercise_type) == 'all',
+                Achievement.description == f"Accumulate {threshold} total minutes of all exercise types!"
             ).first()
 
             if sum_all_duration >= threshold and not existing_all:
+                print(f"Adding achievement: Accumulate {threshold} total minutes of all exercise types!")
                 achievement = Achievement(
                     user_id=user_id,
                     exercise_type='ALL',
@@ -396,7 +406,7 @@ def handle_exercise_log():
                 db.session.add(achievement)
 
         db.session.commit()
-        return redirect(url_for('exercise_log'))
+        return redirect(url_for('main.exercise_log'))
 
     logs = ExerciseLog.query.filter_by(user_id=user_id).order_by(ExerciseLog.date.desc()).all()
     return render_template('exercise_log.html', logs=logs)
@@ -406,6 +416,28 @@ def handle_achievement():
     user_id = session['user_id']
     achievements = Achievement.query.filter_by(user_id=user_id) \
         .order_by(Achievement.achieved_at.desc()).all()
+    
+    # Add additional debugging
+    print(f"Found {len(achievements)} achievements for user {user_id}")
+    for achievement in achievements:
+        print(f"Achievement: {achievement.description} ({achievement.exercise_type})")
+        
+    # Add icon for each exercise type
+    for achievement in achievements:
+        match achievement.exercise_type.lower():
+            case 'all':
+                achievement.icon = '⭐'
+            case 'running':
+                achievement.icon = '🏃'
+            case 'cycling':
+                achievement.icon = '🚴'
+            case 'swimming':
+                achievement.icon = '🏊'
+            case 'yoga':
+                achievement.icon = '🧘'
+            case _:
+                achievement.icon = '🧩'
+                
     return render_template('achievement.html', achievements=achievements)
 
 
@@ -430,7 +462,7 @@ def handle_add_friend(user_id):
         db.session.commit()
         flash("Friend request sent!", 'success')
 
-    return redirect(url_for('view_others', username=target_user.username))
+    return redirect(url_for('main.view_others', username=target_user.username))
 
 
 def handle_respond_request(user_id, response):
@@ -445,7 +477,7 @@ def handle_respond_request(user_id, response):
         flash("Friend request denied.", 'info')
 
     db.session.commit()
-    return redirect(url_for('view_others', username=sender_user.username))
+    return redirect(url_for('main.view_others', username=sender_user.username))
 
 
 def get_achievements(user_id):

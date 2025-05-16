@@ -4,7 +4,7 @@
 const kcalChart = document.getElementById('myChart').getContext('2d');
 const timeChart = document.getElementById('bubbleChart').getContext('2d');
 
-fetch('/charts')
+fetch('/main/charts')
 .then(res => res.json())
 .then(data => 
     new Chart(kcalChart, {
@@ -53,7 +53,7 @@ fetch('/charts')
 
 
 // Exercise minutes in the last 100 days
-fetch('/charts')
+fetch('/main/charts')
   .then(res => res.json())
   .then(data =>
     new Chart(timeChart, {

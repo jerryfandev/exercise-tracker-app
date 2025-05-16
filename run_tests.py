@@ -1,18 +1,18 @@
-import pytest
+import unittest
 import sys
 import os
 
 if __name__ == "__main__":
-    # Set environment variable to indicate testing mode
+    # Set environment variable to indicate test mode
     os.environ["FLASK_ENV"] = "testing"
     
-    # Running all the unit tests
-    print("Running the unit tests...")
-    exit_code = pytest.main(["-v", "tests/unit/"])
+    # Discover and run all tests
+    test_loader = unittest.TestLoader()
+    test_suite = test_loader.discover('tests/unit', pattern='test_*.py')
     
-    # To run selenium tests, uncomment the following lines:
-    # print("Running the selenium tests...")
-    # selenium_code = pytest.main(["-v", "tests/selenium/"])
-    # exit_code = exit_code or selenium_code  # Use non-zero code if either test suite fails
+    # Run tests
+    test_runner = unittest.TextTestRunner(verbosity=2)
+    result = test_runner.run(test_suite)
     
-    sys.exit(exit_code)
+    # Exit with non-zero code if any tests failed
+    sys.exit(not result.wasSuccessful())

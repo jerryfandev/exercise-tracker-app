@@ -25,42 +25,43 @@
         <div class="p-3">
             <div class="brand">
             <i class="fa-solid fa-xmark xmark"></i>
-            <a class="brand-name cursor-pointer" href="{{ url_for('dashboard') }}">
+            <a class="brand-name cursor-pointer" href="{{ url_for('main.dashboard') }}">
                 <span>CITS5505</span>
             </a>
         </div>
         <ul>
             <li>
-                <a id="/dashboard" href="{{ url_for('dashboard') }}" class="sidebar-link">
+                <a id="/dashboard" href="{{ url_for('main.dashboard') }}" class="sidebar-link">
                     <i class="fa-solid fa-square-poll-horizontal"></i>
                     <span>DASHBOARD</span>
                 </a>
             </li>
             <li>
-                <a id="/profile" href="{{ url_for('profile') }}" class="sidebar-link">
+                <a id="/profile" href="{{ url_for('main.profile') }}" class="sidebar-link">
                     <i class="fa-solid fa-user"></i>
                     <span>PROFILE</span>
                 </a>
             </li>
             <li>
-                <a id="/sharing" href="{{ url_for('sharing') }}" class="sidebar-link">
+                <a id="/sharing" href="{{ url_for('main.sharing') }}" class="sidebar-link">
                     <i class="fa-solid fa-share-from-square"></i>
                     <span>SHARING</span>
                 </a>
             </li>
             <li>
-                <a id="/exercise_log" href="{{ url_for('exercise_log') }}" class="sidebar-link">
+                <a id="/exercise_log" href="{{ url_for('main.exercise_log') }}" class="sidebar-link">
                     <i class="fa-solid fa-dumbbell"></i>
                     <span>EXERCISE LOG</span>
                 </a>
             </li>
             <li>
-                <a
-                    href="#"
-                    class="sidebar-link"
-                    data-bs-toggle="modal"
-                    data-bs-target="#confirmLogoutModal"
-                >
+                <a id="/achievement" href="{{ url_for('main.achievement') }}" class="sidebar-link">
+                    <i class="fa-solid fa-trophy"></i>
+                    <span>ACHIEVEMENT</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="sidebar-link" data-bs-toggle="modal" data-bs-target="#logoutModal">
                     <i class="fa-solid fa-right-from-bracket"></i>
                     <span>LOGOUT</span>
                 </a>
